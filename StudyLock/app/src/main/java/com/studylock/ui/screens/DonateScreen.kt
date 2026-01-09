@@ -66,14 +66,14 @@ fun DonateScreen(onBack: () -> Unit) {
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Column(modifier = Modifier.padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text("Support Number", fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
+                            Text("Merchant Account", fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
                             Text(
-                                "01700-000000",
+                                "01XXXXXXXXX", // Generic placeholder for production
                                 fontSize = 24.sp,
                                 fontWeight = FontWeight.ExtraBold,
                                 letterSpacing = 2.sp
                             )
-                            Text("Use bKash Send Money / Cash In", fontSize = 12.sp, color = Color.Gray)
+                            Text("(Coming Soon / Enter your number here)", fontSize = 12.sp, color = Color.Gray)
                         }
                     }
                     
