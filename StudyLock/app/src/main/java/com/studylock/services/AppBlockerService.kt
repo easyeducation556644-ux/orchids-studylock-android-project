@@ -21,6 +21,7 @@ class AppBlockerService : Service() {
 
     override fun onCreate() {
         super.onCreate()
+        NotificationService.createNotificationChannel(this)
         startForeground(NOTIFICATION_ID, createNotification())
         observeBlockedApps()
         startMonitoring()

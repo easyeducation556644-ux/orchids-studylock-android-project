@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 
 export default function Home() {
@@ -23,7 +25,7 @@ export default function Home() {
               <li>• Gradle wrapper files added to <code>/StudyLock</code></li>
               <li>• <code>gradlew.bat</code> fixed for JAVA_HOME paths with spaces</li>
               <li>• Java 17 compatibility configured for JDK 25</li>
-              <li>• Changes committed and pushed to Orchids storage</li>
+              <li>• Notification channel initialization improved</li>
             </ul>
           </section>
 
