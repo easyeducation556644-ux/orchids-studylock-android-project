@@ -51,7 +51,7 @@ fun MainScreen(
                     Text("Focus Level", fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
                     Spacer(modifier = Modifier.height(8.dp))
                     LinearProgressIndicator(
-                        progress = 0.7f, // Logic for real focus level could be added here
+                        progress = 0.7f,
                         modifier = Modifier.fillMaxWidth(),
                         strokeCap = androidx.compose.ui.graphics.StrokeCap.Round
                     )
