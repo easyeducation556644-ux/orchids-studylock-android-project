@@ -9,21 +9,24 @@ import android.os.Handler
 import android.os.Looper
 import androidx.core.app.NotificationCompat
 import com.studylock.data.StudyLockDatabase
+import com.studylock.data.entities.Routine
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
+import java.util.Calendar
 
 class AppBlockerService : Service() {
     private val serviceJob = Job()
     private val serviceScope = CoroutineScope(Dispatchers.IO + serviceJob)
     private var blockedPackages: Set<String> = emptySet()
+    private var activeRoutines: List<Routine> = emptyList()
     private val handler = Handler(Looper.getMainLooper())
     private val checkInterval = 1000L // Check every second for better responsiveness
 
     override fun onCreate() {
         super.onCreate()
-        NotificationService.createNotificationChannel(this)
         startForeground(NOTIFICATION_ID, createNotification())
         observeBlockedApps()
+        observeRoutines()
         startMonitoring()
     }
 
@@ -32,6 +35,15 @@ class AppBlockerService : Service() {
             val db = StudyLockDatabase.getDatabase(applicationContext)
             db.blockedAppDao().getAllBlockedApps().collectLatest { apps ->
                 blockedPackages = apps.filter { it.isBlocked }.map { it.packageName }.toSet()
+            }
+        }
+    }
+
+    private fun observeRoutines() {
+        serviceScope.launch {
+            val db = StudyLockDatabase.getDatabase(applicationContext)
+            db.routineDao().getAllRoutines().collectLatest { routines ->
+                activeRoutines = routines.filter { it.isActive }
             }
         }
     }
@@ -53,6 +65,11 @@ class AppBlockerService : Service() {
     }
 
     private fun checkTopActivity() {
+        if (blockedPackages.isEmpty()) return
+
+        val isRoutineActive = activeRoutines.any { isCurrentTimeInRoutine(it.startTime, it.endTime) }
+        if (!isRoutineActive) return
+
         val usageStatsManager = getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
         val time = System.currentTimeMillis()
         val stats = usageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_DAILY, time - 1000 * 60, time)
@@ -67,8 +84,13 @@ class AppBlockerService : Service() {
         }
     }
 
+    private fun isCurrentTimeInRoutine(startTime: String, endTime: String): Boolean {
+        val cal = Calendar.getInstance()
+        val now = String.format("%02d:%02d", cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE))
+        return now >= startTime && now <= endTime
+    }
+
     private fun launchBlockOverlay(packageName: String) {
-        // Bring user back to StudyLock or show a block screen
         val intent = Intent(this, com.studylock.MainActivity::class.java).apply {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
             putExtra("SCREEN", "BLOCK_OVERLAY")
