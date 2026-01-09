@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">StudyLock</string>
+    <string name="device_admin_label">StudyLock Focus Guard</string>
+    <string name="device_admin_description">Enables focus mode protections to keep you on track with your studies.</string>
+</resources>
